@@ -1,0 +1,4 @@
+SerpentFortniteGameAgentPlugin:
+  frame_handler: PLAY
+SerpentFortniteGamePlugin:
+  fps: 8
