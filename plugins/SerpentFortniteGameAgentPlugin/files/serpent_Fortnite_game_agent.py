@@ -87,6 +87,13 @@ def set_pos(x, y):
     command = pynput._util.win32.INPUT(ctypes.c_ulong(0), ii_)
     SendInput(1, ctypes.pointer(command), ctypes.sizeof(command))
 
+def MouseMoveTo(x, y):
+    extra = ctypes.c_ulong(0)
+    ii_ = pynput._util.win32.INPUT_union()
+    ii_.mi = pynput._util.win32.MOUSEINPUT(x, y, 0, (0x0001 | 0x8000), 0,
+                                           ctypes.cast(ctypes.pointer(extra), ctypes.c_void_p))
+    command = pynput._util.win32.INPUT(ctypes.c_ulong(0), ii_)
+    SendInput(1, ctypes.pointer(command), ctypes.sizeof(command))
 
 def left_click():
     extra = ctypes.c_ulong(0)
@@ -124,6 +131,12 @@ class SerpentFortniteGameAgent(GameAgent):
 
     def setup_play(self):
         self.sct = mss()
+        self.ACTIVATION_RANGE = 250
+        self.Wd,self. Hd = self.sct.monitors[1]["width"], self.sct.monitors[1]["height"]
+        self.damage_box = (int(self.Wd / 2 - self.ACTIVATION_RANGE / 2),
+                   int(self.Hd / 2 - self.ACTIVATION_RANGE / 2),
+                   int(self.Wd / 2 + self.ACTIVATION_RANGE / 2),
+                   int(self.Hd / 2 + self.ACTIVATION_RANGE / 2))
         self.monitor = {"top": 994, "left": 815, "width": 25, "height": 20}
         self.input_mapping = {
             "KEY_W": [KeyboardKey.KEY_W],
@@ -134,7 +147,12 @@ class SerpentFortniteGameAgent(GameAgent):
             "KEY_C": [KeyboardKey.KEY_C],
             "KEY_1": [KeyboardKey.KEY_1],
             "KEY_2": [KeyboardKey.KEY_2],
-            "KEY_3": [KeyboardKey.KEY_3]
+            "KEY_3": [KeyboardKey.KEY_3],
+            "KEY_E": [KeyboardKey.KEY_E],
+            "MOUSE_-50X": ["-50X"],
+            "MOUSE_-50Y": ["-50Y"],
+            "MOUSE_50X": ["50X"],
+            "MOUSE_50Y": ["50Y"]
         }
         self.game_inputs = [
             {
@@ -173,7 +191,8 @@ class SerpentFortniteGameAgent(GameAgent):
             terminal = terminal = {
                 1: False
             }
-        self.agent.observe(reward=self.reward_ai(), terminal=terminal)
+        self.reward_observe = self.reward_ai()
+        self.agent.observe(reward=self.reward_observe, terminal=terminal)
 
         frame_buffer = FrameGrabber.get_frames([0, 2, 4, 6], frame_type="PIPELINE")
         self.game_input = self.agent.generate_actions(frame_buffer)
@@ -182,6 +201,11 @@ class SerpentFortniteGameAgent(GameAgent):
         return self.game_input
 
     def _measure_actor_hp(self):
+        damage_dealt = self.sct.grab(self.damage_box)
+        damage_dealt = Image.frombytes("RGB", damage_dealt.size, damage_dealt.bgra, "raw", "BGRX")
+        text_damage_dealt = pytesseract.image_to_string(damage_dealt, config='digits')
+        text_damage_dealt = text_damage_dealt.replace(' ', '')
+        text_damage_dealt = re.sub("\D", "", text_damage_dealt)
         img_health = self.sct.grab(self.monitor)
         img_health = Image.frombytes("RGB", img_health.size, img_health.bgra, "raw", "BGRX")
         img_health = img_health.resize((100, 80))
@@ -191,11 +215,32 @@ class SerpentFortniteGameAgent(GameAgent):
         if self.num_there(text) is True:
             text = int(text)
             if text == 0:
-                return 100
+                if self.num_there(text_damage_dealt) is True:
+                    text_damage_dealt = int(text_damage_dealt)
+                    if type(text_damage_dealt) == None:
+                        return -100
+                    else:
+                        return 200
+                else:
+                    return 100
             elif type(text) == None:
-                return 100
+                if self.num_there(text_damage_dealt) is True:
+                    text_damage_dealt = int(text_damage_dealt)
+                    if type(text_damage_dealt) == None:
+                        return -100
+                    else:
+                        return 200
+                else:
+                    return 100
             else:
-                return text
+                if self.num_there(text_damage_dealt) is True:
+                    text_damage_dealt = int(text_damage_dealt)
+                    if type(text_damage_dealt) == None:
+                        return -100
+                    else:
+                        return 200
+                else:
+                    return text
     def reward_ai(self):
         self.hp = self._measure_actor_hp()
         self.reward = 1
@@ -204,8 +249,14 @@ class SerpentFortniteGameAgent(GameAgent):
         except:
             self.reward = 1
         self.reward = int(self.reward)
-        return self.reward
-
+        print (self.reward)
+        try:
+            if self.reward < 0:
+                return -50
+            else:
+                return self.reward
+        except:
+            return self.reward
     def extract_game_area(self, frame_buffer):
         game_area_buffer = []
         for game_frame in frame_buffer.frames:
@@ -234,11 +285,11 @@ LABELS = open(labelsPath).read().strip().split("\n")
 COLORS = np.random.randint(0, 255, size=(len(LABELS), 3),
                            dtype="uint8")
 sct = mss()
-ACTIVATION_RANGE = 250
+ACTIVATION_RANGE = 200
 Wd, Hd = sct.monitors[1]["width"], sct.monitors[1]["height"]
-origbox = (int(Wd / 2 - 250 / 2),
+origbox = (int(Wd / 2 - ACTIVATION_RANGE / 2),
            int(Hd / 2 - ACTIVATION_RANGE / 2),
-           int(Wd / 2 + 250 / 2),
+           int(Wd / 2 + ACTIVATION_RANGE / 2),
            int(Hd / 2 + ACTIVATION_RANGE / 2))
 def do_third_input(game_input):
     if "KEY_W" in game_input:
@@ -261,27 +312,43 @@ def do_second_input(game_input):
         ReleaseKey(0x20)
 
 def do_input(game_input):
+    currentMouseX1, currentMouseY1 = pyautogui.position()
     if "KEY_SPACE" in game_input:
         HoldKey(0x39)
         time.sleep(.1)
         ReleaseKey(0x39)
     elif "KEY_C" in game_input:
         HoldKey(0x2E)
-        time.sleep(.05)
+        time.sleep(.01)
         ReleaseKey(0x2E)
     elif "KEY_1" in game_input:
         HoldKey(0x02)
-        time.sleep(.05)
+        time.sleep(.01)
         ReleaseKey(0x02)
     elif "KEY_2" in game_input:
         HoldKey(0x03)
-        time.sleep(.05)
+        time.sleep(.01)
         ReleaseKey(0x03)
     elif "KEY_3" in game_input:
         HoldKey(0x04)
-        time.sleep(.05)
+        time.sleep(.01)
         ReleaseKey(0x04)
-
+    elif "KEY_E" in game_input:
+        HoldKey(0x12)
+        time.sleep(.01)
+        ReleaseKey(0x12)
+    elif "-50Y" in game_input:
+        Y = currentMouseY1 + -30
+        set_pos(0, Y)
+    elif "-50X" in game_input:
+        X = currentMouseX1 + -30
+        set_pos(X, 0)
+    elif "50Y" in game_input:
+        Y1 = currentMouseY1 + 30
+        set_pos(0, Y1)
+    elif "50X" in game_input:
+        X1 = currentMouseX1 + 30
+        set_pos(X1, 0)
 def aim():
     W, H = None, None
     img = sct.grab(origbox)
@@ -390,17 +457,14 @@ def aim():
                         mouseX = origbox[0] + x + w / 2
                         mouseY = origbox[1] + y + h / 8
                         set_pos(mouseX, mouseY)
-                        random_choice = random.randint(1, 2)
+                        random_choice = random.randint(1, 3)
                         if random_choice == 1:
                             HoldKey(0x0F)
                             time.sleep(.01)
                             ReleaseKey(0x0F)
-                            time.sleep(.1)
+                            time.sleep(.3)
                             left_click()
-                            HoldKey(0x21)
-                            time.sleep(.01)
-                            ReleaseKey(0x21)
-                            left_click()
+                        elif random_choice == 2:
                             HoldKey(0x04)
                             time.sleep(.01)
                             ReleaseKey(0x04)
@@ -420,6 +484,7 @@ def aim():
                             left_click()
                             time.sleep(.15)
                             left_click()
+
 def run_input(game_input):
     _thread.start_new_thread(aim , ())
     _thread.start_new_thread(do_input, (game_input,))
