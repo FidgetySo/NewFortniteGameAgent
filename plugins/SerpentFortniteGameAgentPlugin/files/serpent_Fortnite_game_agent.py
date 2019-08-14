@@ -131,7 +131,7 @@ class SerpentFortniteGameAgent(GameAgent):
 
     def setup_play(self):
         self.sct = mss()
-        self.ACTIVATION_RANGE = 250
+        self.ACTIVATION_RANGE = 300
         self.Wd,self. Hd = self.sct.monitors[1]["width"], self.sct.monitors[1]["height"]
         self.damage_box = (int(self.Wd / 2 - self.ACTIVATION_RANGE / 2),
                    int(self.Hd / 2 - self.ACTIVATION_RANGE / 2),
@@ -312,43 +312,75 @@ def do_second_input(game_input):
         ReleaseKey(0x20)
 
 def do_input(game_input):
-    currentMouseX1, currentMouseY1 = pyautogui.position()
     if "KEY_SPACE" in game_input:
         HoldKey(0x39)
-        time.sleep(.1)
+        time.sleep(.005)
         ReleaseKey(0x39)
     elif "KEY_C" in game_input:
         HoldKey(0x2E)
-        time.sleep(.01)
+        time.sleep(.005)
         ReleaseKey(0x2E)
     elif "KEY_1" in game_input:
         HoldKey(0x02)
-        time.sleep(.01)
+        time.sleep(.005)
         ReleaseKey(0x02)
     elif "KEY_2" in game_input:
         HoldKey(0x03)
-        time.sleep(.01)
+        time.sleep(.005)
         ReleaseKey(0x03)
     elif "KEY_3" in game_input:
         HoldKey(0x04)
-        time.sleep(.01)
+        time.sleep(.005)
         ReleaseKey(0x04)
     elif "KEY_E" in game_input:
         HoldKey(0x12)
-        time.sleep(.01)
+        time.sleep(.005)
         ReleaseKey(0x12)
-    elif "-50Y" in game_input:
-        Y = currentMouseY1 + -30
-        set_pos(0, Y)
+def do_Mouse_input(game_input):
+    currentMouseX1, currentMouseY1 = pyautogui.position()
+    if "-50Y" in game_input:
+        Y = currentMouseY1 - 125
+        set_pos(currentMouseX1, Y)
     elif "-50X" in game_input:
-        X = currentMouseX1 + -30
-        set_pos(X, 0)
+        X = currentMouseX1 - 125
+        set_pos(X, currentMouseY1)
     elif "50Y" in game_input:
-        Y1 = currentMouseY1 + 30
-        set_pos(0, Y1)
+        Y1 = currentMouseY1 + 125
+        set_pos(currentMouseX1, Y1)
     elif "50X" in game_input:
-        X1 = currentMouseX1 + 30
-        set_pos(X1, 0)
+        X1 = currentMouseX1 + 125
+        set_pos(X1, currentMouseY1)
+def aim_input():
+    choice = aim()
+    if type(choice) != None:
+        if choice == 1:
+            HoldKey(0x0F)
+            time.sleep(.005)
+            ReleaseKey(0x0F)
+            time.sleep(.3)
+            left_click()
+        elif choice == 2:
+            HoldKey(0x04)
+            time.sleep(.005)
+            ReleaseKey(0x04)
+            left_click()
+        elif choice == 3:
+            HoldKey(0x04)
+            time.sleep(.005)
+            ReleaseKey(0x04)
+            left_click()
+            time.sleep(.200)
+            left_click()
+            time.sleep(.200)
+            left_click()
+            time.sleep(.200)
+            left_click()
+            time.sleep(.200)
+            left_click()
+            time.sleep(.200)
+            left_click()
+    else:
+        pass
 def aim():
     W, H = None, None
     img = sct.grab(origbox)
@@ -459,34 +491,16 @@ def aim():
                         set_pos(mouseX, mouseY)
                         random_choice = random.randint(1, 3)
                         if random_choice == 1:
-                            HoldKey(0x0F)
-                            time.sleep(.01)
-                            ReleaseKey(0x0F)
-                            time.sleep(.3)
-                            left_click()
+                            return 1
                         elif random_choice == 2:
-                            HoldKey(0x04)
-                            time.sleep(.01)
-                            ReleaseKey(0x04)
-                            left_click()
+                            return 2
+                        elif random_choice == 3:
+                            return 3
                         else:
-                            HoldKey(0x04)
-                            time.sleep(.01)
-                            ReleaseKey(0x04)
-                            left_click()
-                            time.sleep(.15)
-                            left_click()
-                            time.sleep(.15)
-                            left_click()
-                            time.sleep(.15)
-                            left_click()
-                            time.sleep(.15)
-                            left_click()
-                            time.sleep(.15)
-                            left_click()
-
+                            return None
 def run_input(game_input):
     _thread.start_new_thread(aim , ())
     _thread.start_new_thread(do_input, (game_input,))
     _thread.start_new_thread(do_second_input, (game_input,))
     _thread.start_new_thread(do_third_input, (game_input,))
+    _thread.start_new_thread(do_Mouse_input, (game_input,))

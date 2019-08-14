@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf280da-4f41-455a-abeb-032acb0bd3c5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_mouse.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node.pid" beforeDir="false" afterPath="$PROJECT_DIR$/node.pid" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/SerpentFortniteGameAgentPlugin/files/serpent_Fortnite_game_agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/SerpentFortniteGameAgentPlugin/files/serpent_Fortnite_game_agent.py" afterDir="false" />
@@ -59,7 +59,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
