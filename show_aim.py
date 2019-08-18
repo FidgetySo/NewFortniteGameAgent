@@ -3,11 +3,11 @@ from mss import mss
 import numpy as np
 sct = mss()
 while True:
-    ACTIVATION_RANGE = 250
+    ACTIVATION_RANGE = 300
     Wd, Hd = sct.monitors[1]["width"], sct.monitors[1]["height"]
-    origbox = (int(Wd / 2 - 250 / 2),
+    origbox = (int(Wd / 2 - ACTIVATION_RANGE / 2),
                int(Hd / 2 - ACTIVATION_RANGE / 2),
-               int(Wd / 2 + 250 / 2),
+               int(Wd / 2 + ACTIVATION_RANGE / 2),
                int(Hd / 2 + ACTIVATION_RANGE / 2))
     img = sct.grab(origbox)
     im = np.array(img)

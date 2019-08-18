@@ -13,7 +13,7 @@ from serpent.frame_grabber import FrameGrabber
 from serpent.game_agent import GameAgent
 from serpent.input_controller import KeyboardKey
 
-from serpent.machine_learning.reinforcement_learning.agents.ppo_agent import PPOAgent as SerpentPPO
+from serpent.machine_learning.reinforcement_learning.agents.recorder_agent import RecorderAgent as SerpentRecorder
 
 import os
 
@@ -121,7 +121,7 @@ def release_left_click():
     x=pynput._util.win32.INPUT(ctypes.c_ulong(0), ii_)
     SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
 
-class SerpentFortniteGameAgent(GameAgent):
+class SerpentFortniteRecorderGameAgent(GameAgent):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -165,10 +165,10 @@ class SerpentFortniteGameAgent(GameAgent):
                 "inputs": self.input_mapping
             }
         ]
-        self.agent = SerpentPPO(
+        self.agent = SerpentRecorder(
             "Fortnite",
-            input_shape=(100, 100),
-            game_inputs=self.game_inputs
+            game_inputs=self.game_inputs,
+            window_geometry = self.game.window_geometry
         )
 
         self.started_at = datetime.utcnow().isoformat()
@@ -198,8 +198,7 @@ class SerpentFortniteGameAgent(GameAgent):
         self.reward_observe = self.reward_ai()
         self.agent.observe(reward=self.reward_observe, terminal=terminal)
 
-        frame_buffer = FrameGrabber.get_frames([0, 2, 4, 6], frame_type="PIPELINE")
-        self.game_input = self.agent.generate_actions(frame_buffer)
+        self.game_input =self.agent._merge_frames_and_input_events(self.game_inputs)
         self.game_input = str(self.game_input)
         print(self.game_input)
         return self.game_input
@@ -356,53 +355,59 @@ def do_Mouse_input(game_input):
         X1 = currentMouseX1 + 250
         set_pos(X1, currentMouseY1)
 def aim_input():
-    if "1" in game_input:
-        HoldKey(0x0F)
-        time.sleep(.005)
-        ReleaseKey(0x0F)
-        time.sleep(.3)
-        left_click()
-    elif "2" in game_input:
-        HoldKey(0x04)
-        time.sleep(.005)
-        ReleaseKey(0x04)
-        left_click()
-    elif "3" in game_input:
-        HoldKey(0x04)
-        time.sleep(.005)
-        ReleaseKey(0x04)
-        left_click()
-        time.sleep(.200)
-        left_click()
-        time.sleep(.200)
-        left_click()
-        time.sleep(.200)
-        left_click()
-        time.sleep(.200)
-        left_click()
-        time.sleep(.200)
-        left_click()
-    elif "4" in game_input:
-        HoldKey(0x11)
-        time.sleep(.25)
-        HoldKey(0x0D)
-        time.sleep(.01)
-        ReleaseKey(0x0D)
-        time.sleep(.01)
-        left_click()
-        HoldKey(0x30)
-        time.sleep(.01)
-        ReleaseKey(0x30)
-        left_click()
-        HoldKey(0x0F)
-        time.sleep(.01)
-        ReleaseKey(0x0F)
-        left_click()
-        HoldKey(0x10)
-        time.sleep(.01)
-        ReleaseKey(0x10)
-        ReleaseKey(0x11)
-def aim():
+    choice = aim()
+    if type(choice) != None:
+        if choice == 1:
+            HoldKey(0x0F)
+            time.sleep(.005)
+            ReleaseKey(0x0F)
+            time.sleep(.3)
+            left_click()
+        elif choice == 2:
+            HoldKey(0x04)
+            time.sleep(.005)
+            ReleaseKey(0x04)
+            left_click()
+        elif choice == 3:
+            HoldKey(0x04)
+            time.sleep(.005)
+            ReleaseKey(0x04)
+            left_click()
+            time.sleep(.200)
+            left_click()
+            time.sleep(.200)
+            left_click()
+            time.sleep(.200)
+            left_click()
+            time.sleep(.200)
+            left_click()
+            time.sleep(.200)
+            left_click()
+        elif choice == 4:
+            HoldKey(0x11)
+            time.sleep(.25)
+            HoldKey(0x0D)
+            time.sleep(.01)
+            ReleaseKey(0x0D)
+            time.sleep(.01)
+            left_click()
+            HoldKey(0x30)
+            time.sleep(.01)
+            ReleaseKey(0x30)
+            left_click()
+            HoldKey(0x0F)
+            time.sleep(.01)
+            ReleaseKey(0x0F)
+            left_click()
+            HoldKey(0x10)
+            time.sleep(.01)
+            ReleaseKey(0x10)
+            ReleaseKey(0x11)
+        else:
+            pass
+    else:
+        pass
+def aim(game_input):
     W, H = None, None
     img = sct.grab(origbox)
     # convert image to numpy array
@@ -510,6 +515,16 @@ def aim():
                         mouseX = origbox[0] + x + w / 2
                         mouseY = origbox[1] + y + h / 8
                         set_pos(mouseX, mouseY)
+                        if "1" in game_input:
+                            return 1
+                        elif "2" in game_input:
+                            return 2
+                        elif "3" in game_input:
+                            return 3
+                        elif "4" in game_input:
+                            return 4
+                        else:
+                            return None
 def run_input(game_input):
     _thread.start_new_thread(aim , (game_input,))
     _thread.start_new_thread(do_input, (game_input,))

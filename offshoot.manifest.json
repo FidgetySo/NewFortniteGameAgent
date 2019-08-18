@@ -29,6 +29,21 @@
             "config": {
                 "fps": 2
             }
+        },
+        "SerpentFortniteRecorderGameAgentPlugin": {
+            "name": "SerpentFortniteRecorderGameAgentPlugin",
+            "version": "0.1.0",
+            "files": [
+                {
+                    "path": "serpent_FortniteRecorder_game_agent.py",
+                    "pluggable": "GameAgent"
+                }
+            ],
+            "plugins": [],
+            "libraries": [],
+            "config": {
+                "frame_handler": "PLAY"
+            }
         }
     }
 }

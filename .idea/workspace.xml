@@ -2,16 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf280da-4f41-455a-abeb-032acb0bd3c5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/test_mouse.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/SerpentFortniteGame-master.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SerpentFortniteGame-master.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/config.plugins.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.plugins.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node.pid" beforeDir="false" afterPath="$PROJECT_DIR$/node.pid" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/offshoot.manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/offshoot.manifest.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/SerpentFortniteGameAgentPlugin/files/serpent_Fortnite_game_agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/SerpentFortniteGameAgentPlugin/files/serpent_Fortnite_game_agent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/show_aim.py" beforeDir="false" afterPath="$PROJECT_DIR$/show_aim.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="SerpentFortniteGame-master" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -26,7 +33,7 @@
   <component name="ProjectId" id="1PHkDoFXLUEOhlJ95LxHhIKQNWz" />
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Miniconda3/envs/Serpent" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
